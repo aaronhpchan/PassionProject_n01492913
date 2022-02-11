@@ -1,0 +1,11 @@
+﻿@model IEnumerable<PassionProject_n01492913.Models.WishlistDto>
+@{
+    ViewBag.Title = "List";
+}
+
+<h1>Your Wishlists</h1>
+@foreach(var wishlist in Model) 
+{
+    <h2><a href="/Wishlist/Details/@wishlist.WishlistID">@wishlist.WishlistName</a></h2>
+}
+
