@@ -28,10 +28,13 @@ namespace PassionProject_n01492913.Models
         //add entities to system
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
+
+        //public System.Data.Entity.DbSet<PassionProject_n01492913.Models.Wishlist> Wishlists { get; set; }
     }
 }
