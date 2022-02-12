@@ -1,0 +1,21 @@
+﻿@model IEnumerable<PassionProject_n01492913.Models.WishlistDto>
+@{
+    ViewBag.Title = "New";
+}
+
+<a href="/Product/List">Back to Products</a>
+
+
+<form action="" method="POST">
+    <fieldset>
+        <select name="Wishlist">
+            <option value="">Add to Wishlist</option>
+            @foreach (var wishlist in Model)
+            {
+                <option value="@wishlist.WishlistID">@wishlist.WishlistName</option>
+            }
+
+        </select>
+    </fieldset>
+</form>
+

@@ -1,0 +1,13 @@
+﻿@model IEnumerable<PassionProject_n01492913.Models.ProductDto>
+@{
+    ViewBag.Title = "Products";
+}
+
+<h1>Our Products</h1>
+@foreach (var product in Model)
+{
+    <h2><a href="/Product/Details/@product.ProductID">@product.ProductName</a></h2>
+    <div>@product.CategoryName</div>
+    <div>@product.ProductID</div>
+    <div>$@product.ProductPrice</div>
+}

@@ -1,4 +1,5 @@
 ﻿using PassionProject_n01492913.Models;
+using PassionProject_n01492913.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,16 +19,16 @@ namespace PassionProject_n01492913.Controllers
         static WishlistController()
         {
             client = new HttpClient();
-            client.BaseAddress = new Uri("https://localhost:44309//api/wishlistdata/");
+            client.BaseAddress = new Uri("https://localhost:44309/api/");
         }
         
         // GET: Wishlist/List
         public ActionResult List()
         {
             //objective: communicate with wishlist data api to retrieve a list of wishlists
-            //curl https://localhost:44309//api/wishlistdata/listwishlists
+            //curl https://localhost:44309/api/wishlistdata/listwishlists
 
-            string url = "listwishlists";
+            string url = "wishlistdata/listwishlists";
             HttpResponseMessage response = client.GetAsync(url).Result;
 
             Debug.WriteLine("Response Code: " + response.StatusCode);
@@ -42,17 +43,27 @@ namespace PassionProject_n01492913.Controllers
         public ActionResult Details(int id)
         {
             //objective: communicate with wishlist data api to retrieve one wishlist
-            //curl https://localhost:44309//api/wishlistdata/findwishlist/{id}
+            //curl https://localhost:44309/api/wishlistdata/findwishlist/{id}
 
-            string url = "findwishlist/" + id;
+            ProductsWishlist ViewModel = new ProductsWishlist();
+
+            string url = "wishlistdata/findwishlist/" + id;
             HttpResponseMessage response = client.GetAsync(url).Result;
 
             Debug.WriteLine("Response Code: " + response.StatusCode);
 
-            WishlistDto selectedWishlist = response.Content.ReadAsAsync<WishlistDto>().Result;
-            Debug.WriteLine("Wishlist Received: " + selectedWishlist.WishlistName);
+            WishlistDto SelectedWishlist = response.Content.ReadAsAsync<WishlistDto>().Result;
+            Debug.WriteLine("Wishlist Received: " + SelectedWishlist.WishlistName);
 
-            return View(selectedWishlist);
+            ViewModel.SelectedWishlist = SelectedWishlist;
+
+            //send request to gather info about products related to a particular wishlist ID
+            url = "productdata/listproductsforwishlist/" + id;
+            response = client.GetAsync(url).Result;
+            IEnumerable<ProductDto> RelatedProducts = response.Content.ReadAsAsync<IEnumerable<ProductDto>>().Result;
+            ViewModel.RelatedProducts = RelatedProducts;
+
+            return View(ViewModel);
         }
 
         public ActionResult Error()
@@ -73,8 +84,8 @@ namespace PassionProject_n01492913.Controllers
             Debug.WriteLine("Inputted Wishlist Name: " + wishlist.WishlistName);
 
             //objective: add a new wishlist into system using api
-            //curl -d @wishlist.json -H "Content-type:application/json" https://localhost:44309//api/wishlistdata/addwishlist
-            string url = "addwishlist";
+            //curl -d @wishlist.json -H "Content-type:application/json" https://localhost:44309/api/wishlistdata/addwishlist
+            string url = "wishlistdata/addwishlist";
 
             string jsonpayload = jss.Serialize(wishlist);
 
@@ -92,8 +103,6 @@ namespace PassionProject_n01492913.Controllers
             {
                 return RedirectToAction("Error");
             }
-
-            return RedirectToAction("List");
         }
 
         // GET: Wishlist/Edit/5

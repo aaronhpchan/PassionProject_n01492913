@@ -1,9 +1,17 @@
-﻿@model PassionProject_n01492913.Models.WishlistDto
+﻿@model PassionProject_n01492913.Models.ViewModels.ProductsWishlist
 @{
-    ViewBag.Title = "View";
+    ViewBag.Title = @Model.SelectedWishlist.WishlistName;
 }
 
 <a href="/Wishlist/List">Back to Your Wishlists</a>
-<h2>@Model.WishlistName</h2>
-<div>Wishlist ID: @Model.WishlistID</div>
+<h2>@Model.SelectedWishlist.WishlistName</h2>
+<div>Wishlist ID: @Model.SelectedWishlist.WishlistID</div>
 
+<div>
+    @foreach (var product in Model.RelatedProducts)
+    {
+        <a href="/Product/Details/@product.ProductID">@product.ProductName</a>
+        <div>@product.CategoryName</div>
+        <div>@product.ProductPrice</div>
+    }
+</div>

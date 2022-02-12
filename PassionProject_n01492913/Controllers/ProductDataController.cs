@@ -34,6 +34,38 @@ namespace PassionProject_n01492913.Controllers
             return ProductDtos;
         }
 
+        /// <summary>
+        /// Gathers info about products related to a particular wishlist
+        /// </summary>
+        /// <returns>
+        /// HEADER: 200 (OK)
+        /// CONTENT: all products in the database, including their associated categories that match to a particular wishlist id
+        /// </returns>
+        /// <param name="id">Wishlist ID</param>
+        /// <example>
+        /// GET: api/ProductData/ListProductsForWishlist/1
+        /// </example>
+        [HttpGet]
+        [ResponseType(typeof(ProductDto))]
+        public IHttpActionResult ListProductsForWishlist(int id)
+        {
+            //all products that have wishlists which match with ID
+            List<Product> Products = db.Products.Where(
+                a => a.Wishlists.Any(
+                    k => k.WishlistID == id
+                )).ToList();
+            List<ProductDto> ProductDtos = new List<ProductDto>();
+
+            Products.ForEach(a => ProductDtos.Add(new ProductDto()
+            {
+                ProductID = a.ProductID,
+                ProductName = a.ProductName,
+                ProductPrice = a.ProductPrice,
+                CategoryName = a.Category.CategoryName
+            }));
+
+            return Ok(ProductDtos);
+        }
 
         // GET: api/ProductData/FindProduct/5
         [ResponseType(typeof(Product))]
