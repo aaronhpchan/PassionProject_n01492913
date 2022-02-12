@@ -9,15 +9,16 @@
 <div>@Model.SelectedProduct.ProductID</div>
 <div>$@Model.SelectedProduct.ProductPrice</div>
 
-<form action="" method="POST">
+<form action="/Product/Associate/@Model.SelectedProduct.ProductID" method="POST">
     <fieldset>
-        <select name="Wishlist">
-            <option value="">Add to Wishlist</option>
+        <select name="WishlistID">
+            <option value="" disabled>Add to Wishlist</option>
             @foreach (var wishlist in Model.WishlistOptions)
             {
                 <option value="@wishlist.WishlistID">@wishlist.WishlistName</option>
             }
         </select>
+        <input type="submit" value="Confirm" />
     </fieldset>
     <a href="/Wishlist/New">Create New Wishlist</a>
 </form>

@@ -64,6 +64,37 @@ namespace PassionProject_n01492913.Controllers
             return View(ViewModel);
         }
 
+        //POST: Product/Associate/{productid}
+        [HttpPost]
+        public ActionResult Associate(int id, int WishlistID)
+        {
+            Debug.WriteLine("Attempting to associate product :" + id + " with wishlist " + WishlistID);
+
+            //call our api to associate product with wishlist
+            string url = "productdata/associateproductwithwishlist/" + id + "/" + WishlistID;
+            HttpContent content = new StringContent("");
+            content.Headers.ContentType.MediaType = "application/json";
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+
+            return RedirectToAction("Details/" + id);
+        }
+
+        //Get: Product/UnAssociate/{id}?WishlistID={wishlistID}
+        [HttpGet]
+        public ActionResult UnAssociate(int id, int WishlistID)
+        {
+            Debug.WriteLine("Attempting to unassociate product: " + id + " with wishlist: " + WishlistID);
+
+            //call our api to associate product with wishlist
+            string url = "productdata/unassociateproductwithwishlist/" + id + "/" + WishlistID;
+            HttpContent content = new StringContent("");
+            content.Headers.ContentType.MediaType = "application/json";
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+
+            //return RedirectToAction("Details/" + id);
+            return RedirectToAction("Details/" + WishlistID, "Wishlist");
+        }
+
         // GET: Product/New
         public ActionResult New()
         {

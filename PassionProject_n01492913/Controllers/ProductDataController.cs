@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -65,6 +66,82 @@ namespace PassionProject_n01492913.Controllers
             }));
 
             return Ok(ProductDtos);
+        }
+
+        /// <summary>
+        /// Associates a particular wishlist with a particular product
+        /// </summary>
+        /// <param name="productid">The product ID primary key</param>
+        /// <param name="wishlistid">The wishlist ID primary key</param>
+        /// <returns>
+        /// HEADER: 200 (OK)
+        /// or
+        /// HEADER: 404 (NOT FOUND)
+        /// </returns>
+        /// <example>
+        /// POST api/ProductData/AssociateProductWithWishlist/9/1
+        /// </example>
+        [HttpPost]
+        [Route("api/ProductData/AssociateProductWithWishlist/{productid}/{wishlistid}")]
+        public IHttpActionResult AssociateProductWithWishlist(int productid, int wishlistid)
+        {
+
+            Product SelectedProduct = db.Products.Include(a => a.Wishlists).Where(a => a.ProductID == productid).FirstOrDefault();
+            Wishlist SelectedWishlist = db.Wishlists.Find(wishlistid);
+
+            if (SelectedProduct == null || SelectedWishlist == null)
+            {
+                return NotFound();
+            }
+
+            Debug.WriteLine("input product id: " + productid);
+            Debug.WriteLine("selected product name: " + SelectedProduct.ProductName);
+            Debug.WriteLine("input wishlist id: " + wishlistid);
+            Debug.WriteLine("selected wishlist name: " + SelectedWishlist.WishlistName);
+
+
+            SelectedProduct.Wishlists.Add(SelectedWishlist);
+            db.SaveChanges();
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Removes an association between a particular wishlist and a particular product
+        /// </summary>
+        /// <param name="productid">The product ID primary key</param>
+        /// <param name="wishlistid">The wishlist ID primary key</param>
+        /// <returns>
+        /// HEADER: 200 (OK)
+        /// or
+        /// HEADER: 404 (NOT FOUND)
+        /// </returns>
+        /// <example>
+        /// POST api/ProductData/UnAssociateProductWithWishlist/9/1
+        /// </example>
+        [HttpPost]
+        [Route("api/ProductData/UnAssociateProductWithWishlist/{productid}/{wishlistid}")]
+        public IHttpActionResult UnAssociateProductWithWishlist(int productid, int wishlistid)
+        {
+
+            Product SelectedProduct = db.Products.Include(a => a.Wishlists).Where(a => a.ProductID == productid).FirstOrDefault();
+            Wishlist SelectedWishlist = db.Wishlists.Find(wishlistid);
+
+            if (SelectedProduct == null || SelectedWishlist == null)
+            {
+                return NotFound();
+            }
+
+            Debug.WriteLine("input product id: " + productid);
+            Debug.WriteLine("selected product name: " + SelectedProduct.ProductName);
+            Debug.WriteLine("input wishlist id: " + wishlistid);
+            Debug.WriteLine("selected wishlist name: " + SelectedWishlist.WishlistName);
+
+
+            SelectedProduct.Wishlists.Remove(SelectedWishlist);
+            db.SaveChanges();
+
+            return Ok();
         }
 
         // GET: api/ProductData/FindProduct/5

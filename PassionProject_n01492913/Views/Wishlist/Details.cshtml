@@ -17,5 +17,7 @@
         <a href="/Product/Details/@product.ProductID">@product.ProductName</a>
         <div>@product.CategoryName</div>
         <div>@product.ProductPrice</div>
+
+        <a style="color:#ab2020;" href="/Product/Unassociate/@product.ProductID?WishlistID=@Model.SelectedWishlist.WishlistID">Remove from Wishlist</a><br />
     }
 </div>
