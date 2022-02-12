@@ -1,0 +1,20 @@
+﻿@model PassionProject_n01492913.Models.WishlistDto
+
+@{
+    ViewBag.Title = "Edit Wishlist";
+}
+
+<h2>Edit Wishlist</h2>
+<form action="/Wishlist/Update/@Model.WishlistID" method="POST">
+    <div style="display:none;">
+        @* Pass through the wishlist ID *@
+        <input type="text" name="WishlistID" value="@Model.WishlistID" />
+    </div>
+    <div>
+        <label>Name:</label> <input type="text" name="WishlistName" value="@Model.WishlistName" />
+    </div>
+    <div>
+        <input type="submit" value="Update Wishlist" />
+    </div>
+</form>
+

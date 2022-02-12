@@ -1,0 +1,14 @@
+﻿@model PassionProject_n01492913.Models.WishlistDto
+
+@{
+    ViewBag.Title = "Delete Wishlist";
+}
+
+<h2>Confirm delete wishlist @Model.WishlistName?</h2>
+<a href="/Wishlist/List">Cancel</a>
+<h2>@Model.WishlistName</h2>
+<div>Wishlist ID: @Model.WishlistID</div>
+
+<form action="/Wishlist/Delete/@Model.WishlistID" method="POST">
+    <input type="submit" value="Confirm Delete" />
+</form>
