@@ -1,0 +1,12 @@
+﻿@model IEnumerable<PassionProject_n01492913.Models.CategoryDto>
+@{
+    ViewBag.Title = "Categories";
+}
+
+<h1>Categories</h1>
+
+@foreach (var category in Model)
+{
+    <h2><a href="/Category/Details/@category.CategoryID">@category.CategoryName</a></h2>
+}
+
