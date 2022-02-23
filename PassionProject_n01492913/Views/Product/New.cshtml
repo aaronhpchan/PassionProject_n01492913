@@ -1,21 +1,32 @@
-﻿@model IEnumerable<PassionProject_n01492913.Models.WishlistDto>
+﻿@model IEnumerable<PassionProject_n01492913.Models.CategoryDto>
 @{
-    ViewBag.Title = "New";
+    ViewBag.Title = "Add Product";
 }
 
 <a href="/Product/List">Back to Products</a>
+<h2>Add Product</h2>
 
-
-<form action="" method="POST">
+<form action="/Product/Create" method="POST">
+    <div>
+        <label>Name: </label>
+        <input name="ProductName" type="text" />
+    </div>
+    <div>
+        <label>Price: </label>
+        <input name="ProductPrice" type="number" step=".01" />
+    </div>
     <fieldset>
-        <select name="Wishlist">
-            <option value="">Add to Wishlist</option>
-            @foreach (var wishlist in Model)
+        <label>Category: </label>
+        <select name="CategoryID">
+            <option value="" selected="true" disabled="disabled">Pick a Category</option>
+            @foreach (var category in Model)
             {
-                <option value="@wishlist.WishlistID">@wishlist.WishlistName</option>
+                <option value="@category.CategoryID">@category.CategoryName</option>
             }
-
         </select>
     </fieldset>
+    <div>
+        <input type="submit" value="Add Product"/>
+    </div>
 </form>
 

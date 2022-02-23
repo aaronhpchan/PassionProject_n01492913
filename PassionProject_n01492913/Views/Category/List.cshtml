@@ -3,10 +3,11 @@
     ViewBag.Title = "Categories";
 }
 
-<h1>Categories</h1>
+<h1>Product Categories</h1>
+<a href="/Category/New">Add New Category</a>
 
 @foreach (var category in Model)
 {
-    <h2><a href="/Category/Details/@category.CategoryID">@category.CategoryName</a></h2>
+    <h2 class="h3"><a href="/Category/Details/@category.CategoryID">@category.CategoryName</a></h2>
 }
 

@@ -7,12 +7,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace PassionProject_n01492913.Controllers
 {
     public class ProductController : Controller
     {
         private static readonly HttpClient client;
+        JavaScriptSerializer jss = new JavaScriptSerializer();
 
         static ProductController()
         {
@@ -98,73 +100,109 @@ namespace PassionProject_n01492913.Controllers
         // GET: Product/New
         public ActionResult New()
         {
-            //retrieve a list of wishlists
-            //GET api/wishlistdata/listwishlists
+            //retrieve a list of categories
+            //GET api/categorydata/listcategories
 
-            string url = "wishlistdata/listwishlists";
+            string url = "categorydata/listcategories";
             HttpResponseMessage response = client.GetAsync(url).Result;
-            IEnumerable<WishlistDto> wishlistOptions = response.Content.ReadAsAsync<IEnumerable<WishlistDto>>().Result;
+            IEnumerable<CategoryDto> CategoryOptions = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
 
-            return View(wishlistOptions);
+            return View(CategoryOptions);
         }
 
         // POST: Product/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(Product product)
         {
-            try
-            {
-                // TODO: Add insert logic here
+            Debug.WriteLine("Inputted Product Name: " + product.ProductName);
 
-                return RedirectToAction("Index");
-            }
-            catch
+            //objective: add a new product into system using api
+            //curl -d @product.json -H "Content-type:application/json" https://localhost:44309/api/productdata/addproduct
+            string url = "productdata/addproduct";
+
+            string jsonpayload = jss.Serialize(product);
+            Debug.WriteLine("jsonpayload: " + jsonpayload);
+
+            HttpContent content = new StringContent(jsonpayload);
+            content.Headers.ContentType.MediaType = "application/json";
+
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+            if (response.IsSuccessStatusCode)
             {
-                return View();
+                return RedirectToAction("List");
+            }
+            else
+            {
+                return RedirectToAction("Error");
             }
         }
 
         // GET: Product/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            UpdateProduct ViewModel = new UpdateProduct();
+            
+            //existing product information
+            string url = "productdata/findproduct/" + id;
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            ProductDto SelectedProduct = response.Content.ReadAsAsync<ProductDto>().Result;
+            ViewModel.SelectedProduct = SelectedProduct;
+
+            //include all categories to choose from when updating product
+            url = "categorydata/listcategories/";
+            response = client.GetAsync(url).Result;
+            IEnumerable<CategoryDto> CategoryOptions = response.Content.ReadAsAsync<IEnumerable<CategoryDto>>().Result;
+            ViewModel.CategoryOptions = CategoryOptions;
+
+            return View(ViewModel);
         }
 
-        // POST: Product/Edit/5
+        // POST: Product/Update/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Update(int id, Product product)
         {
-            try
+            string url = "productdata/updateproduct/" + id;
+            string jsonpayload = jss.Serialize(product);
+            HttpContent content = new StringContent(jsonpayload);
+            content.Headers.ContentType.MediaType = "application/json";
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+            Debug.WriteLine(content);
+            if (response.IsSuccessStatusCode)
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
-            catch
+            else
             {
-                return View();
+                return RedirectToAction("Error");
             }
         }
 
-        // GET: Product/Delete/5
-        public ActionResult Delete(int id)
+        // GET: Product/DeleteConfirm/5
+        public ActionResult DeleteConfirm(int id)
         {
-            return View();
+            string url = "productdata/findproduct/" + id;
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            ProductDto SelectedProduct = response.Content.ReadAsAsync<ProductDto>().Result;
+            return View(SelectedProduct);
         }
+
 
         // POST: Product/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(int id)
         {
-            try
-            {
-                // TODO: Add delete logic here
+            string url = "productdata/deleteproduct/" + id;
+            HttpContent content = new StringContent("");
+            content.Headers.ContentType.MediaType = "application/json";
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
 
-                return RedirectToAction("Index");
-            }
-            catch
+            if (response.IsSuccessStatusCode)
             {
-                return View();
+                return RedirectToAction("List");
+            }
+            else
+            {
+                return RedirectToAction("Error");
             }
         }
     }

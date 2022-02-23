@@ -1,8 +1,20 @@
-﻿@model PassionProject_n01492913.Models.CategoryDto
+﻿@model PassionProject_n01492913.Models.ViewModels.DetailsCategory
 @{
     ViewBag.Title = "Details";
 }
 
 <a href="/Category/List">Back to Categories</a>
-<h2>@Model.CategoryName</h2>
+<br />
+<a href="/Category/Edit/@Model.SelectedCategory.CategoryID">Update</a>
+<br />
+<!-- <a style="color:#ab2020;" href="/Category/DeleteConfirm/@Model.SelectedCategory.CategoryID">Delete</a> -->
+<h2>@Model.SelectedCategory.CategoryName</h2>
+
+<div>
+    @foreach (var product in Model.CategorizedProducts)
+    {
+        <a href="/Product/Details/@product.ProductID">@product.ProductName</a>
+        <div>$@product.ProductPrice</div>
+    }
+</div>
 

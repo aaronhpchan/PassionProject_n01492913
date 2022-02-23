@@ -4,6 +4,10 @@
 }
 
 <a href="/Product/List">Back to Products</a>
+<br />
+<a href="/Product/Edit/@Model.SelectedProduct.ProductID">Update</a>
+<br />
+<a style="color:#ab2020;" href="/Product/DeleteConfirm/@Model.SelectedProduct.ProductID">Delete</a>
 <h2>@Model.SelectedProduct.ProductName</h2>
 <div>@Model.SelectedProduct.CategoryName</div>
 <div>@Model.SelectedProduct.ProductID</div>
@@ -12,7 +16,7 @@
 <form action="/Product/Associate/@Model.SelectedProduct.ProductID" method="POST">
     <fieldset>
         <select name="WishlistID">
-            <option value="" disabled>Add to Wishlist</option>
+            <option value="" selected="true" disabled="disabled">Add to Wishlist</option>
             @foreach (var wishlist in Model.WishlistOptions)
             {
                 <option value="@wishlist.WishlistID">@wishlist.WishlistName</option>

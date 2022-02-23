@@ -1,0 +1,34 @@
+﻿@model PassionProject_n01492913.Models.ViewModels.UpdateProduct
+
+@{
+    ViewBag.Title = "Edit Product";
+}
+
+<h2>Edit Product</h2>
+<form action="/Product/Update/@Model.SelectedProduct.ProductID" method="POST">
+    <div style="display:none;">
+        @* Pass through the product ID *@
+        <input type="text" name="ProductID" value="@Model.SelectedProduct.ProductID" />
+    </div>
+    <div>
+        <label>Name: </label> <input type="text" name="ProductName" value="@Model.SelectedProduct.ProductName" />
+    </div>
+    <div>
+        <label>Price: </label> <input type="number" step="0.01" name="ProductPrice" value="@Model.SelectedProduct.ProductPrice" />
+    </div>
+    <fieldset>
+        <label>Category: </label>
+        <select name="CategoryID">
+            <option value="" selected="true" disabled="disabled">Pick a Category</option>
+            @foreach (var category in Model.CategoryOptions)
+            {
+                <option value="@category.CategoryID">@category.CategoryName</option>
+            }
+        </select>
+    </fieldset>
+    <div>
+        <input type="submit" value="Update Product" />
+    </div>
+</form>
+
+

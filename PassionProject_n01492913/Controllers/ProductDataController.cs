@@ -36,6 +36,35 @@ namespace PassionProject_n01492913.Controllers
         }
 
         /// <summary>
+        /// Gathers info about products related to a particular category
+        /// </summary>
+        /// <returns>
+        /// HEADER: 200 (OK)
+        /// CONTENT: all products in the database that match to a particular category id
+        /// </returns>
+        /// <param name="id">Category ID</param>
+        /// <example>
+        /// GET: api/ProductData/ListProductsForCategory/1
+        /// </example>
+        [HttpGet]
+        [ResponseType(typeof(ProductDto))]
+        public IHttpActionResult ListProductsForCategory(int id)
+        {
+            //all products that have wishlists which match with ID
+            List<Product> Products = db.Products.Where(a => a.CategoryID == id).ToList();
+            List<ProductDto> ProductDtos = new List<ProductDto>();
+
+            Products.ForEach(a => ProductDtos.Add(new ProductDto()
+            {
+                ProductID = a.ProductID,
+                ProductName = a.ProductName,
+                ProductPrice = a.ProductPrice,
+            }));
+
+            return Ok(ProductDtos);
+        }
+
+        /// <summary>
         /// Gathers info about products related to a particular wishlist
         /// </summary>
         /// <returns>
@@ -204,7 +233,7 @@ namespace PassionProject_n01492913.Controllers
         // POST: api/ProductData/AddProduct
         [ResponseType(typeof(Product))]
         [HttpPost]
-        public IHttpActionResult PostProduct(Product product)
+        public IHttpActionResult AddProduct(Product product)
         {
             if (!ModelState.IsValid)
             {

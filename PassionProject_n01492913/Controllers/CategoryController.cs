@@ -1,4 +1,5 @@
 ﻿using PassionProject_n01492913.Models;
+using PassionProject_n01492913.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,15 +45,25 @@ namespace PassionProject_n01492913.Controllers
             //objective: communicate with category data api to retrieve a list of categories
             //curl https://localhost:44309/api/categorydata/findcategory/{id}
 
+            DetailsCategory ViewModel = new DetailsCategory();
+
             string url = "categorydata/findcategory/" + id;
             HttpResponseMessage response = client.GetAsync(url).Result;
 
             Debug.WriteLine("Response Code: " + response.StatusCode);
 
             CategoryDto SelectedCategory = response.Content.ReadAsAsync<CategoryDto>().Result;
-            Debug.WriteLine("Category Received: " + SelectedCategory.CategoryName);
+            //Debug.WriteLine("Category Received: " + SelectedCategory.CategoryName);
 
-            return View(SelectedCategory);
+            ViewModel.SelectedCategory = SelectedCategory;
+
+            //send request to gather info about products related to a particular category ID
+            url = "productdata/listproductsforcategory/" + id;
+            response = client.GetAsync(url).Result;
+            IEnumerable<ProductDto> CategorizedProducts = response.Content.ReadAsAsync<IEnumerable<ProductDto>>().Result;
+            ViewModel.CategorizedProducts = CategorizedProducts;
+
+            return View(ViewModel);
         }
 
         public ActionResult Error()
@@ -97,22 +108,29 @@ namespace PassionProject_n01492913.Controllers
         // GET: Category/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            string url = "categorydata/findcategory/" + id;
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            CategoryDto SelectedCategory = response.Content.ReadAsAsync<CategoryDto>().Result;
+            return View(SelectedCategory);
         }
 
-        // POST: Category/Edit/5
+        // POST: Category/Update/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Update(int id, Category category)
         {
-            try
+            string url = "categorydata/updatecategory/" + id;
+            string jsonpayload = jss.Serialize(category);
+            HttpContent content = new StringContent(jsonpayload);
+            content.Headers.ContentType.MediaType = "application/json";
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+            Debug.WriteLine(content);
+            if (response.IsSuccessStatusCode)
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
-            catch
+            else
             {
-                return View();
+                return RedirectToAction("Error");
             }
         }
 
