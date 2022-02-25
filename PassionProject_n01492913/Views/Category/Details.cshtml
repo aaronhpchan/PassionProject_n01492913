@@ -13,7 +13,17 @@
 <div>
     @foreach (var product in Model.CategorizedProducts)
     {
-        <a href="/Product/Details/@product.ProductID">@product.ProductName</a>
+        <h3><a href="/Product/Details/@product.ProductID">@product.ProductName</a></h3>
+        <div>
+            @{
+                string imageurl = "/Content/Images/Products/default.jpg";
+                if (product.ProductHasPic)
+                {
+                    imageurl = "/Content/Images/Products/" + product.ProductID + "." + product.PicExtension;
+                }
+            }
+            <img style="display:block; max-width:100%;" alt="@product.ProductName" src="@imageurl" />
+        </div>
         <div>$@product.ProductPrice</div>
     }
 </div>

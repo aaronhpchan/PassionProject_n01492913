@@ -4,9 +4,11 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using PassionProject_n01492913.Models;
@@ -29,6 +31,8 @@ namespace PassionProject_n01492913.Controllers
                 ProductID = a.ProductID,
                 ProductName = a.ProductName,
                 ProductPrice = a.ProductPrice,
+                ProductHasPic = a.ProductHasPic,
+                PicExtension = a.PicExtension,
                 CategoryName = a.Category.CategoryName
             }));
 
@@ -59,6 +63,8 @@ namespace PassionProject_n01492913.Controllers
                 ProductID = a.ProductID,
                 ProductName = a.ProductName,
                 ProductPrice = a.ProductPrice,
+                ProductHasPic = a.ProductHasPic,
+                PicExtension = a.PicExtension
             }));
 
             return Ok(ProductDtos);
@@ -91,6 +97,8 @@ namespace PassionProject_n01492913.Controllers
                 ProductID = a.ProductID,
                 ProductName = a.ProductName,
                 ProductPrice = a.ProductPrice,
+                ProductHasPic = a.ProductHasPic,
+                PicExtension = a.PicExtension,
                 CategoryName = a.Category.CategoryName
             }));
 
@@ -174,7 +182,7 @@ namespace PassionProject_n01492913.Controllers
         }
 
         // GET: api/ProductData/FindProduct/5
-        [ResponseType(typeof(Product))]
+        [ResponseType(typeof(ProductDto))]
         [HttpGet]
         public IHttpActionResult FindProduct(int id)
         {
@@ -184,6 +192,8 @@ namespace PassionProject_n01492913.Controllers
                 ProductID = Product.ProductID,
                 ProductName = Product.ProductName,
                 ProductPrice = Product.ProductPrice,
+                ProductHasPic = Product.ProductHasPic,
+                PicExtension = Product.PicExtension,
                 CategoryName = Product.Category.CategoryName
             };
             if (Product == null)
@@ -210,6 +220,8 @@ namespace PassionProject_n01492913.Controllers
             }
 
             db.Entry(product).State = EntityState.Modified;
+            db.Entry(product).Property(a => a.ProductHasPic).IsModified = false;
+            db.Entry(product).Property(a => a.PicExtension).IsModified = false;
 
             try
             {
@@ -228,6 +240,84 @@ namespace PassionProject_n01492913.Controllers
             }
 
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Receives product picture data, uploads it to the webserver and updates the product's HasPic option
+        /// </summary>
+        /// <param name="id">the product id</param>
+        /// <returns>status code 200 if successful.</returns>
+        /// <example>
+        /// curl -F productpic=@file.jpg "https://localhost:xx/api/productdata/uploadproductpic/2"
+        /// POST: api/productData/UpdateProductPic/3
+        /// HEADER: enctype=multipart/form-data
+        /// FORM-DATA: image
+        /// </example>
+        [HttpPost]
+        public IHttpActionResult UploadProductPic(int id)
+        {
+            bool haspic = false;
+            string picextension;
+            if (Request.Content.IsMimeMultipartContent())
+            {
+                Debug.WriteLine("Received multipart form data.");
+
+                int numfiles = HttpContext.Current.Request.Files.Count;
+                Debug.WriteLine("Files Received: " + numfiles);
+
+                //Check if a file is posted
+                if (numfiles == 1 && HttpContext.Current.Request.Files[0] != null)
+                {
+                    var productPic = HttpContext.Current.Request.Files[0];
+                    //Check if the file is empty
+                    if (productPic.ContentLength > 0)
+                    {
+                        //establish valid file types (can be changed to other file extensions if desired!)
+                        var valtypes = new[] { "jpeg", "jpg", "png", "gif" };
+                        var extension = Path.GetExtension(productPic.FileName).Substring(1);
+                        //Check the extension of the file
+                        if (valtypes.Contains(extension))
+                        {
+                            try
+                            {
+                                //file name is the id of the image
+                                string fn = id + "." + extension;
+
+                                //get a direct file path to ~/Content/animals/{id}.{extension}
+                                string path = Path.Combine(HttpContext.Current.Server.MapPath("~/Content/Images/Products/"), fn);
+
+                                //save the file
+                                productPic.SaveAs(path);
+
+                                //if these are all successful then we can set these fields
+                                haspic = true;
+                                picextension = extension;
+
+                                //Update the animal haspic and picextension fields in the database
+                                Product SelectedProduct = db.Products.Find(id);
+                                SelectedProduct.ProductHasPic = haspic;
+                                SelectedProduct.PicExtension = extension;
+                                db.Entry(SelectedProduct).State = EntityState.Modified;
+
+                                db.SaveChanges();
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("product Image was not saved successfully.");
+                                Debug.WriteLine("Exception:" + ex);
+                                return BadRequest();
+                            }
+                        }
+                    }
+                }
+                return Ok();
+            }
+            else
+            {
+                //not multipart form data
+                return BadRequest();
+            }
         }
 
         // POST: api/ProductData/AddProduct
@@ -257,10 +347,21 @@ namespace PassionProject_n01492913.Controllers
                 return NotFound();
             }
 
+            if (product.ProductHasPic && product.PicExtension != "")
+            {
+                //also delete image from path
+                string path = HttpContext.Current.Server.MapPath("~/Content/Images/Products/" + id + "." + product.PicExtension);
+                if (System.IO.File.Exists(path))
+                {
+                    Debug.WriteLine("File exists...preparing to delete");
+                    System.IO.File.Delete(path);
+                }
+            }
+
             db.Products.Remove(product);
             db.SaveChanges();
 
-            return Ok(product);
+            return Ok();
         }
 
         protected override void Dispose(bool disposing)

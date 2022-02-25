@@ -5,7 +5,7 @@
 }
 
 <h2>Edit Product</h2>
-<form action="/Product/Update/@Model.SelectedProduct.ProductID" method="POST">
+<form action="/Product/Update/@Model.SelectedProduct.ProductID" method="POST" enctype = "multipart/form-data">
     <div style="display:none;">
         @* Pass through the product ID *@
         <input type="text" name="ProductID" value="@Model.SelectedProduct.ProductID" />
@@ -19,13 +19,16 @@
     <fieldset>
         <label>Category: </label>
         <select name="CategoryID">
-            <option value="" selected="true" disabled="disabled">Pick a Category</option>
+            <option value="" selected disabled>Pick a Category</option>
             @foreach (var category in Model.CategoryOptions)
             {
                 <option value="@category.CategoryID">@category.CategoryName</option>
             }
         </select>
     </fieldset>
+    <div>
+        <input type="file" name="ProductPic" />
+    </div>
     <div>
         <input type="submit" value="Update Product" />
     </div>

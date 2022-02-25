@@ -18,11 +18,37 @@ namespace PassionProject_n01492913.Controllers
 
         static ProductController()
         {
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = false,
+                //cookies are manually set in RequestHeader
+                UseCookies = false
+            };
+
             client = new HttpClient();
             client.BaseAddress = new Uri("https://localhost:44309/api/");
         }
 
-        
+        /// <summary>
+        /// Grabs the authentication cookie sent to this controller.
+        /// </summary>
+        private void GetApplicationCookie()
+        {
+            string token = "";
+            client.DefaultRequestHeaders.Remove("Cookie");
+            if (!User.Identity.IsAuthenticated) return;
+
+            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies.Get(".AspNet.ApplicationCookie");
+            if (cookie != null) token = cookie.Value;
+
+            //collect token as it is submitted to the controller
+            //use it to pass along to the WebAPI.
+            Debug.WriteLine("Token Submitted: " + token);
+            if (token != "") client.DefaultRequestHeaders.Add("Cookie", ".AspNet.ApplicationCookie=" + token);
+
+            return;
+        }
+
         // GET: Product/List
         public ActionResult List()
         {
@@ -70,6 +96,7 @@ namespace PassionProject_n01492913.Controllers
         [HttpPost]
         public ActionResult Associate(int id, int WishlistID)
         {
+            GetApplicationCookie();
             Debug.WriteLine("Attempting to associate product :" + id + " with wishlist " + WishlistID);
 
             //call our api to associate product with wishlist
@@ -85,6 +112,7 @@ namespace PassionProject_n01492913.Controllers
         [HttpGet]
         public ActionResult UnAssociate(int id, int WishlistID)
         {
+            GetApplicationCookie();
             Debug.WriteLine("Attempting to unassociate product: " + id + " with wishlist: " + WishlistID);
 
             //call our api to associate product with wishlist
@@ -114,6 +142,7 @@ namespace PassionProject_n01492913.Controllers
         [HttpPost]
         public ActionResult Create(Product product)
         {
+            GetApplicationCookie();
             Debug.WriteLine("Inputted Product Name: " + product.ProductName);
 
             //objective: add a new product into system using api
@@ -159,16 +188,35 @@ namespace PassionProject_n01492913.Controllers
 
         // POST: Product/Update/5
         [HttpPost]
-        public ActionResult Update(int id, Product product)
+        public ActionResult Update(int id, Product product, HttpPostedFileBase ProductPic)
         {
+            GetApplicationCookie();
             string url = "productdata/updateproduct/" + id;
             string jsonpayload = jss.Serialize(product);
             HttpContent content = new StringContent(jsonpayload);
             content.Headers.ContentType.MediaType = "application/json";
             HttpResponseMessage response = client.PostAsync(url, content).Result;
             Debug.WriteLine(content);
-            if (response.IsSuccessStatusCode)
+
+            //Update request successful, and we have image data
+            if (response.IsSuccessStatusCode && ProductPic != null)
             {
+                //Updating the product picture as a separate request
+                Debug.WriteLine("Calling Update Image method.");
+                //Send over image data for product
+                url = "ProductData/UploadProductPic/" + id;
+                Debug.WriteLine("Received Product Picture " + ProductPic.FileName);
+
+                MultipartFormDataContent requestcontent = new MultipartFormDataContent();
+                HttpContent imagecontent = new StreamContent(ProductPic.InputStream);
+                requestcontent.Add(imagecontent, "ProductPic", ProductPic.FileName);
+                response = client.PostAsync(url, requestcontent).Result;
+
+                return RedirectToAction("List");
+            }
+            else if (response.IsSuccessStatusCode)
+            {
+                //No image upload, but update still successful
                 return RedirectToAction("List");
             }
             else
@@ -191,6 +239,7 @@ namespace PassionProject_n01492913.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
+            GetApplicationCookie();
             string url = "productdata/deleteproduct/" + id;
             HttpContent content = new StringContent("");
             content.Headers.ContentType.MediaType = "application/json";

@@ -13,6 +13,8 @@ namespace PassionProject_n01492913.Models
         public int ProductID { get; set; }
         public string ProductName { get; set; }
         public decimal ProductPrice { get; set; }
+        public bool ProductHasPic { get; set; }
+        public string PicExtension { get; set; }
 
         //a product belongs to one category
         //a category can have many products
@@ -31,5 +33,7 @@ namespace PassionProject_n01492913.Models
         public decimal ProductPrice { get; set; }
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
+        public bool ProductHasPic { get; set; }
+        public string PicExtension { get; set; }
     }
 }
