@@ -21,3 +21,4 @@ Entities
   - [ ] Create Views for end users and administrator separately  
 - [ ] Use of jQuery on client-side 
 - [ ] Improve the design of the website
+- [ ] Add payment functionality
