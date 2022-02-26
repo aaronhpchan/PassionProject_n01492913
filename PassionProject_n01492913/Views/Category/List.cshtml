@@ -3,8 +3,10 @@
     ViewBag.Title = "Categories";
 }
 
-<h1>Product Categories</h1>
-<a href="/Category/New">Add New Category</a>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>Product Categories</h1>
+    <a href="/Category/New">Add New Category</a>
+</div>
 
 @foreach (var category in Model)
 {

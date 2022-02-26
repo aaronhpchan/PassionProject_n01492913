@@ -3,22 +3,30 @@
     ViewBag.Title = "Products";
 }
 
-<a href="/Product/New">Add New Product</a>
-<h1>Our Products</h1>
-@foreach (var product in Model)
-{
-    <h2 class="h3"><a href="/Product/Details/@product.ProductID">@product.ProductName</a></h2>
-    <div>
-        @{
-            string imageurl = "/Content/Images/Products/default.jpg";
-            if (product.ProductHasPic)
-            {
-                imageurl = "/Content/Images/Products/" + product.ProductID + "." + product.PicExtension;
-            }
-        }
-        <img style="display:block; max-width:100%;" alt="@product.ProductName" src="@imageurl" />
-    </div>
-    <div>Category: @product.CategoryName</div>
-    <div>Product ID: @product.ProductID</div>
-    <div>Price: $@product.ProductPrice</div>
-}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>Our Products</h1>
+    <a href="/Product/New">Add New Product</a>
+</div>
+
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-lg-6 text-center" style="padding-top: 4%;">
+            <h2 class="h3"><a href="/Product/Details/@product.ProductID">@product.ProductName</a></h2>
+            <div>
+                @{
+                    string imageurl = "/Content/Images/Products/default.jpg";
+                    if (product.ProductHasPic)
+                    {
+                        imageurl = "/Content/Images/Products/" + product.ProductID + "." + product.PicExtension;
+                    }
+                }
+                <img style="display: block; max-width: 100%;" alt="@product.ProductName" src="@imageurl" />
+            </div>
+            <div>Category: @product.CategoryName</div>
+            <div>Product ID: @product.ProductID</div>
+            <div>Price: $@product.ProductPrice</div>
+        </div>
+    }
+</div>

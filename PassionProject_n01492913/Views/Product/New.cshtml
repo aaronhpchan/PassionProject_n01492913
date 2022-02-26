@@ -18,7 +18,7 @@
     <fieldset>
         <label>Category: </label>
         <select name="CategoryID">
-            <option value="" selected="true" disabled="disabled">Pick a Category</option>
+            <option value="" selected disabled>Pick a Category</option>
             @foreach (var category in Model)
             {
                 <option value="@category.CategoryID">@category.CategoryName</option>
@@ -26,7 +26,7 @@
         </select>
     </fieldset>
     <div>
-        <input type="submit" value="Add Product"/>
+        <input type="submit" value="Add Product" />
     </div>
 </form>
 

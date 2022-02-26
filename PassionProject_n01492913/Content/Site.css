@@ -22,3 +22,10 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.jumbotron {
+    background: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.9)), url("https://images.unsplash.com/photo-1547265789-33afb037965c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=868&q=80"), no-repeat;
+    background-size: cover;
+}
+
+

@@ -3,18 +3,19 @@
     ViewBag.Title = "Details";
 }
 
-<a href="/Category/List">Back to Categories</a>
-<br />
-<a href="/Category/Edit/@Model.SelectedCategory.CategoryID">Update</a>
-<br />
-<!-- <a style="color:#ab2020;" href="/Category/DeleteConfirm/@Model.SelectedCategory.CategoryID">Delete</a> -->
+<div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2%;">
+    <a href="/Category/List">Back to Categories</a>
+    <a href="/Category/Edit/@Model.SelectedCategory.CategoryID" class="text-success">Update</a>
+    <!-- <a style="color:#ab2020;" href="/Category/DeleteConfirm/@Model.SelectedCategory.CategoryID">Delete</a> -->
+</div>
+
 <h2>@Model.SelectedCategory.CategoryName</h2>
 
 <div>
     @foreach (var product in Model.CategorizedProducts)
     {
         <h3><a href="/Product/Details/@product.ProductID">@product.ProductName</a></h3>
-        <div>
+        <div style="width: 50%;">
             @{
                 string imageurl = "/Content/Images/Products/default.jpg";
                 if (product.ProductHasPic)
@@ -24,7 +25,8 @@
             }
             <img style="display:block; max-width:100%;" alt="@product.ProductName" src="@imageurl" />
         </div>
-        <div>$@product.ProductPrice</div>
+        <div>Product ID: @product.ProductID</div>
+        <div>Price: $@product.ProductPrice</div>
     }
 </div>
 

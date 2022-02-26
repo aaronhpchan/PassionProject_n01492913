@@ -3,45 +3,32 @@
     ViewBag.Title = @Model.SelectedProduct.ProductName;
 }
 
-<a href="/Product/List">Back to Products</a>
-<br />
-<a href="/Product/Edit/@Model.SelectedProduct.ProductID">Update</a>
-<br />
-<a style="color:#ab2020;" href="/Product/DeleteConfirm/@Model.SelectedProduct.ProductID">Delete</a>
-<h2>@Model.SelectedProduct.ProductName</h2>
-<div>@Model.SelectedProduct.CategoryName</div>
-<div>@Model.SelectedProduct.ProductID</div>
-<div>$@Model.SelectedProduct.ProductPrice</div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2%;">
+    <a href="/Product/List">Back to Products</a>
+    <div>
+        <a href="/Product/Edit/@Model.SelectedProduct.ProductID" class="text-success">Update</a>
+        <a href="/Product/DeleteConfirm/@Model.SelectedProduct.ProductID" class="text-danger">Delete</a>
+    </div>
+</div>
 
-<div class="row">
-    <div class="col-md-6 col-sm-12">
-        @{
-            string imageurl = "/Content/Images/Products/default.jpg";
-            if (Model.SelectedProduct.ProductHasPic)
-            {
-                imageurl = "/Content/Images/Products/" + Model.SelectedProduct.ProductID + "." + Model.SelectedProduct.PicExtension;
-            }
+<h2>@Model.SelectedProduct.ProductName</h2>
+
+
+
+<div>
+    @{
+        string imageurl = "/Content/Images/Products/default.jpg";
+        if (Model.SelectedProduct.ProductHasPic)
+        {
+            imageurl = "/Content/Images/Products/" + Model.SelectedProduct.ProductID + "." + Model.SelectedProduct.PicExtension;
         }
-        <div><img style="display:block; max-width:100%;" alt="@Model.SelectedProduct.ProductName" src="@imageurl" /></div>
-        <div>@Model.SelectedProduct.CategoryName</div>
-        <div>@Model.SelectedProduct.ProductID</div>
-        <div>$@Model.SelectedProduct.ProductPrice</div>
+    }
+    <div style="width: 50%;">
+        <img style="display:block; max-width:100%;" alt="@Model.SelectedProduct.ProductName" src="@imageurl" />
     </div>
-    <div class="col-md-6 col-sm-12">
-        <form action="/Product/Associate/@Model.SelectedProduct.ProductID" method="POST">
-            <fieldset>
-                <select name="WishlistID">
-                    <option value="" selected disabled>Add to Wishlist</option>
-                    @foreach (var wishlist in Model.WishlistOptions)
-                    {
-                        <option value="@wishlist.WishlistID">@wishlist.WishlistName</option>
-                    }
-                </select>
-                <input type="submit" value="Confirm" />
-            </fieldset>
-            <a href="/Wishlist/New">Create New Wishlist</a>
-        </form>
-    </div>
+    <div>Category: @Model.SelectedProduct.CategoryName</div>
+    <div>Product ID: @Model.SelectedProduct.ProductID</div>
+    <div>Price: $@Model.SelectedProduct.ProductPrice</div>
 </div>
 
 <form action="/Product/Associate/@Model.SelectedProduct.ProductID" method="POST">

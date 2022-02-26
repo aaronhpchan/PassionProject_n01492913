@@ -3,21 +3,35 @@
     ViewBag.Title = @Model.SelectedWishlist.WishlistName;
 }
 
-<a href="/Wishlist/List">Back to Your Wishlists</a>
-<br />
-<a href="/Wishlist/Edit/@Model.SelectedWishlist.WishlistID">Update</a>
-<br />
-<a style="color:#ab2020;" href="/Wishlist/DeleteConfirm/@Model.SelectedWishlist.WishlistID">Delete</a>
-<h2>@Model.SelectedWishlist.WishlistName</h2>
-<div>Wishlist ID: @Model.SelectedWishlist.WishlistID</div>
-
-<div>
-    @foreach (var product in Model.RelatedProducts)
-    {
-        <a href="/Product/Details/@product.ProductID">@product.ProductName</a>
-        <div>@product.CategoryName</div>
-        <div>@product.ProductPrice</div>
-
-        <a style="color:#ab2020;" href="/Product/Unassociate/@product.ProductID?WishlistID=@Model.SelectedWishlist.WishlistID">Remove from Wishlist</a><br />
-    }
+<div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2%;">
+    <a href="/Wishlist/List">Back to Your Wishlists</a>
+    <div>
+        <a href="/Wishlist/Edit/@Model.SelectedWishlist.WishlistID" class="text-success">Update</a>
+        <a href="/Wishlist/DeleteConfirm/@Model.SelectedWishlist.WishlistID" class="text-danger">Delete</a>
+    </div>
 </div>
+
+<h2>@Model.SelectedWishlist.WishlistName</h2>
+<div style="margin-bottom: 4%;">Wishlist ID: @Model.SelectedWishlist.WishlistID</div>
+
+@foreach (var product in Model.RelatedProducts)
+{
+<div style="margin-bottom: 4%;">
+    <h3><a href="/Product/Details/@product.ProductID">@product.ProductName</a></h3>
+    <div style="width: 50%;">
+        @{
+            string imageurl = "/Content/Images/Products/default.jpg";
+            if (product.ProductHasPic)
+            {
+                imageurl = "/Content/Images/Products/" + product.ProductID + "." + product.PicExtension;
+            }
+        }
+        <img style="display:block; max-width:100%;" alt="@product.ProductName" src="@imageurl" />
+    </div>
+    <div>Category: @product.CategoryName</div>
+    <div>Product ID: @product.ProductID</div>
+    <div>Price: $@product.ProductPrice</div>
+
+    <a href="/Product/Unassociate/@product.ProductID?WishlistID=@Model.SelectedWishlist.WishlistID" class="text-danger">Remove from Wishlist</a>
+</div>
+}
